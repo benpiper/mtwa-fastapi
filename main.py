@@ -5,9 +5,27 @@ import time
 from typing import Annotated
 import uvicorn
 from fastapi import FastAPI, Path, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from controllers.serverinfo import router as ServerinfoRouter
 
+LISTENHOST = "0.0.0.0"
+LISTENPORT = 3001
 app = FastAPI()
+
+origins = [
+    "http://127.0.0.1",
+    "http://127.0.0.1:3000",
+    "http://localhost",
+    "http://localhost:3000",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 app.include_router(ServerinfoRouter, prefix="/serverinfo")
 
@@ -16,7 +34,6 @@ app.include_router(ServerinfoRouter, prefix="/serverinfo")
 def home():
     """Hello world"""
     raise HTTPException(status_code=404, detail="Nothing here")
-
 
 
 @app.get('/random')
@@ -35,8 +52,9 @@ def get_random_length(length: Annotated[int, Path(le=1024)]):
 def get_delay(seconds: int):
     """Delay for seconds"""
     time.sleep(seconds)
+    print("Start wait")
     return {"message": f"Wait of {seconds} complete"}
 
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host='0.0.0.0', port=5000, reload=True)
+    uvicorn.run("main:app", host=LISTENHOST, port=LISTENPORT, reload=True)

@@ -1,7 +1,7 @@
 """serverinfo.py"""
 import socket
 import os
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 
 router = APIRouter()
@@ -9,11 +9,13 @@ router = APIRouter()
 
 @router.get("/hostname")
 def get_hostname():
+    """ Get hostname """
     return socket.gethostname()
 
 
 @router.get("/ip")
 def get_ipv4():
+    """Get addresses"""
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     return sock.getsockname()[0]
 
